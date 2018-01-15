@@ -8,13 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		593E52D92007029F00020C15 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E52D82007029F00020C15 /* AppDelegate.m */; };
-		593E52DC2007029F00020C15 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E52DB2007029F00020C15 /* ViewController.m */; };
-		593E52DF2007029F00020C15 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 593E52DD2007029F00020C15 /* Main.storyboard */; };
+		593E52DC2007029F00020C15 /* JCTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E52DB2007029F00020C15 /* JCTableViewController.m */; };
 		593E52E12007029F00020C15 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 593E52E02007029F00020C15 /* Assets.xcassets */; };
 		593E52E42007029F00020C15 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 593E52E22007029F00020C15 /* LaunchScreen.storyboard */; };
 		593E52E72007029F00020C15 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E52E62007029F00020C15 /* main.m */; };
 		593E52F1200702A000020C15 /* JCTableViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E52F0200702A000020C15 /* JCTableViewTests.m */; };
 		593E52FC200702A000020C15 /* JCTableViewUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E52FB200702A000020C15 /* JCTableViewUITests.m */; };
+		593E530F20073EDB00020C15 /* JCTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E530E20073EDB00020C15 /* JCTableViewCell.m */; };
+		593E53122007505B00020C15 /* JCTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E53102007505B00020C15 /* JCTableView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,9 +39,8 @@
 		593E52D42007029F00020C15 /* JCTableView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JCTableView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		593E52D72007029F00020C15 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		593E52D82007029F00020C15 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		593E52DA2007029F00020C15 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		593E52DB2007029F00020C15 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		593E52DE2007029F00020C15 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		593E52DA2007029F00020C15 /* JCTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JCTableViewController.h; sourceTree = "<group>"; };
+		593E52DB2007029F00020C15 /* JCTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JCTableViewController.m; sourceTree = "<group>"; };
 		593E52E02007029F00020C15 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		593E52E32007029F00020C15 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		593E52E52007029F00020C15 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -51,6 +51,11 @@
 		593E52F7200702A000020C15 /* JCTableViewUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JCTableViewUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		593E52FB200702A000020C15 /* JCTableViewUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JCTableViewUITests.m; sourceTree = "<group>"; };
 		593E52FD200702A000020C15 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		593E530D20073EDB00020C15 /* JCTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JCTableViewCell.h; sourceTree = "<group>"; };
+		593E530E20073EDB00020C15 /* JCTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JCTableViewCell.m; sourceTree = "<group>"; };
+		593E53102007505B00020C15 /* JCTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JCTableView.m; sourceTree = "<group>"; };
+		593E53112007505B00020C15 /* JCTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JCTableView.h; sourceTree = "<group>"; };
+		595CDEF82008532F00E60264 /* JCTableViewCellPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JCTableViewCellPrivate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,11 +106,11 @@
 		593E52D62007029F00020C15 /* JCTableView */ = {
 			isa = PBXGroup;
 			children = (
+				593E53092007372800020C15 /* JCTableView */,
+				593E52DA2007029F00020C15 /* JCTableViewController.h */,
+				593E52DB2007029F00020C15 /* JCTableViewController.m */,
 				593E52D72007029F00020C15 /* AppDelegate.h */,
 				593E52D82007029F00020C15 /* AppDelegate.m */,
-				593E52DA2007029F00020C15 /* ViewController.h */,
-				593E52DB2007029F00020C15 /* ViewController.m */,
-				593E52DD2007029F00020C15 /* Main.storyboard */,
 				593E52E02007029F00020C15 /* Assets.xcassets */,
 				593E52E22007029F00020C15 /* LaunchScreen.storyboard */,
 				593E52E52007029F00020C15 /* Info.plist */,
@@ -130,6 +135,18 @@
 				593E52FD200702A000020C15 /* Info.plist */,
 			);
 			path = JCTableViewUITests;
+			sourceTree = "<group>";
+		};
+		593E53092007372800020C15 /* JCTableView */ = {
+			isa = PBXGroup;
+			children = (
+				593E53112007505B00020C15 /* JCTableView.h */,
+				593E53102007505B00020C15 /* JCTableView.m */,
+				593E530D20073EDB00020C15 /* JCTableViewCell.h */,
+				593E530E20073EDB00020C15 /* JCTableViewCell.m */,
+				595CDEF82008532F00E60264 /* JCTableViewCellPrivate.h */,
+			);
+			path = JCTableView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -240,7 +257,6 @@
 			files = (
 				593E52E42007029F00020C15 /* LaunchScreen.storyboard in Resources */,
 				593E52E12007029F00020C15 /* Assets.xcassets in Resources */,
-				593E52DF2007029F00020C15 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,7 +281,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				593E52DC2007029F00020C15 /* ViewController.m in Sources */,
+				593E530F20073EDB00020C15 /* JCTableViewCell.m in Sources */,
+				593E53122007505B00020C15 /* JCTableView.m in Sources */,
+				593E52DC2007029F00020C15 /* JCTableViewController.m in Sources */,
 				593E52E72007029F00020C15 /* main.m in Sources */,
 				593E52D92007029F00020C15 /* AppDelegate.m in Sources */,
 			);
@@ -303,14 +321,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		593E52DD2007029F00020C15 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				593E52DE2007029F00020C15 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		593E52E22007029F00020C15 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
