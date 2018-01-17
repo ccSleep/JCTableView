@@ -54,8 +54,6 @@ typedef NS_ENUM(NSInteger, JCTableViewRowAnimation) {
 //MARK: - JCTableView
 @interface JCTableView : UIScrollView
 
-@property (nonatomic, strong) UITableView *tableView;
-
 @property (nonatomic, weak) id<JCTableViewDataSource> dataSource;
 @property (nonatomic, weak) id<JCTableViewDelegate> delegate;
 

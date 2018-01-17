@@ -59,21 +59,34 @@
     
     ///
     _numberOfSections = 1;
+    
+    self.alwaysBounceVertical = YES;
 }
 
 - (void)layoutSubviews
 {
     [super layoutSubviews];
     
-    _indexPathsForVisibleRows = [self _indexPathForVisibleCells];
+//    CFTimeInterval timeStart = CACurrentMediaTime();
+    
+    NSArray *indexPathsForVisibleRows = [self _indexPathForVisibleCells];
+    if ([indexPathsForVisibleRows isEqualToArray:_indexPathsForVisibleRows]) {
+        return;
+    }
+    
+    _indexPathsForVisibleRows = indexPathsForVisibleRows;
     [_indexPathsForVisibleRows enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull indexPath, NSUInteger idx, BOOL * _Nonnull stop) {
-        JCTableViewCell *cell = [self cellForRowAtIndexPath:indexPath];
+        JCTableViewCell *cell = [self cellForRowAtIndexPath:indexPath created:YES];
         [self _insertCell:cell atIndexPath:indexPath];
     }];
     
     [self _recoverUnvisibleCellsWithVisibleIndexPaths:_indexPathsForVisibleRows];
+    
+    // 0.000248
+//    NSLog(@"layoutSubviews timeEclips:%f", CACurrentMediaTime() - timeStart);
 }
 
+#pragma mark - Accessor
 - (void)setDataSource:(id<JCTableViewDataSource>)dataSource
 {
     _dataSource = dataSource;
@@ -146,9 +159,21 @@
     }];
 }
 
+- (void)_recoverTotalVisibleCells
+{
+    [self.visibleIndexCellMap enumerateKeysAndObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSIndexPath * _Nonnull key, __kindof JCTableViewCell * _Nonnull cell, BOOL * _Nonnull stop) {
+        [self.visibleIndexCellMap removeObjectForKey:key];
+        [self _enqueueReusableCell:cell];
+    }];
+    
+    _indexPathsForVisibleRows = @[];
+}
+
 #pragma mark - Layout
 - (void)_resizeTableContent
 {
+//    CFTimeInterval timeStart = CACurrentMediaTime();
+    
     [_cellIndexHeightMap removeAllObjects];
     [_cellIndexOffsetYMap removeAllObjects];
     
@@ -166,16 +191,14 @@
             [_cellIndexOffsetYMap setObject:@(padding) forKey:indexPath];
             
             padding += height;
+//            NSLog(@"[%zd/%zd] padding:%f height:%f", section, row, padding, height);
         }
     }
     
-    NSLog(@"self.delegate:%@", self.delegate);
-    NSLog(@"_cellIndexHeightMap:%@", _cellIndexHeightMap);
-    
-    if (padding < CGRectGetHeight(self.frame)) {
-        padding = CGRectGetHeight(self.frame);
-    }
     self.contentSize = CGSizeMake(CGRectGetWidth(self.frame), padding);
+    
+    // 0.000024
+//    NSLog(@"_resizeTableContent timeEclipse:%f", CACurrentMediaTime() - timeStart);
 }
 
 - (NSInteger)_amountForCells
@@ -270,14 +293,14 @@
     return nil;
 }
 
-- (nullable __kindof JCTableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (nullable __kindof JCTableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath created:(BOOL)isCreated
 {
     if ([self _invalidIndexPath:indexPath]) {
         return nil;
     }
     
     JCTableViewCell *cell = self.visibleIndexCellMap[indexPath];
-    if (!cell) {
+    if (!cell && isCreated) {
         if (kDataSourceRespondsToSelector(@selector(tableView:cellForRowAtIndexPath:))) {
             cell = [self.dataSource tableView:self cellForRowAtIndexPath:indexPath];
         }
@@ -285,9 +308,32 @@
     return cell;
 }
 
+/// 外部调用方法，只显示 visible
+- (nullable __kindof JCTableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [self cellForRowAtIndexPath:indexPath created:NO];
+}
+
 - (NSArray<__kindof JCTableViewCell *> *)visibleCells
 {
     return self.visibleIndexCellMap.allValues;
+}
+
+- (NSArray<NSIndexPath *> *)_sortedIndexPathForVisibleCells
+{
+    NSArray<NSIndexPath *> *sortedVisibleIndexPaths = [self.visibleIndexCellMap.allKeys sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {
+        if (obj1.section < obj2.section) {
+            return NSOrderedAscending;
+        }
+        else if (obj1.section > obj2.section) {
+            return NSOrderedDescending;
+        }
+        else {
+            return obj1.row > obj2.row;
+        }
+    }];
+    
+    return sortedVisibleIndexPaths;
 }
 
 #pragma mark - Hierarchy
@@ -305,23 +351,89 @@
 {
     // resize
     [self _resizeTableContent];
+    [self _recoverTotalVisibleCells];
     
     [self setNeedsLayout];
 }
 
 - (void)insertRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRowAnimation:(JCTableViewRowAnimation)animation
 {
+    CFTimeInterval timeStart = CACurrentMediaTime();
     
+    if (indexPaths.count == 0) {
+        return;
+    }
+    
+    // resize
+    [self _resizeTableContent];
+    
+    // sorted
+    NSArray<NSIndexPath *> *sortedVisibleIndexPaths = [self _sortedIndexPathForVisibleCells];
+    [indexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull indexPath, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (![self _invalidIndexPath:indexPath]) {
+            
+            // visible
+            if ([sortedVisibleIndexPaths containsObject:indexPath]) {
+                NSMutableArray<NSIndexPath *> *afterIndexPathsInSameSection = [NSMutableArray array];
+                for (NSIndexPath *oneIndex in [sortedVisibleIndexPaths reverseObjectEnumerator]) {
+                    if (oneIndex.section < indexPath.section) {
+                        break;
+                    }
+                    else if (oneIndex.section == indexPath.section && oneIndex.row >= indexPath.row) {
+                        NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:oneIndex.row + 1 inSection:oneIndex.section];
+                        self.visibleIndexCellMap[newIndexPath] = [self cellForRowAtIndexPath:oneIndex];
+                        
+                        [afterIndexPathsInSameSection addObject:newIndexPath];
+                    }
+                }
+                [self.visibleIndexCellMap removeObjectForKey:indexPath];
+                
+                JCTableViewCell *cell = [self cellForRowAtIndexPath:indexPath created:YES];
+                [self _insertCell:cell atIndexPath:indexPath];
+                
+                CGRect destFrame = cell.frame;
+                cell.frame = CGRectOffset(destFrame, 0, -CGRectGetHeight(destFrame));
+                
+                
+                
+                // animation
+                void (^animation)(void) = ^{
+                    cell.frame = destFrame;
+                    
+                    [afterIndexPathsInSameSection enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                        JCTableViewCell *cell = [self cellForRowAtIndexPath:obj];
+                        cell.frame = [self rectForRowAtIndexPath:obj];
+                    }];
+                };
+                
+//                [UIView animateWithDuration:.25f animations:^{
+//                    animation();
+//                }];
+                
+                [UIView animateWithDuration:.25f delay:0.f options:UIViewAnimationOptionTransitionFlipFromRight animations:^{
+                    animation();
+                } completion:^(BOOL finished) {
+                    
+                }];
+            }
+        }
+    }];
+    
+    NSLog(@"insertRowsAtIndexPaths timeEclipse:%f", CACurrentMediaTime() - timeStart);
 }
+
 - (void)deleteRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRowAnimation:(JCTableViewRowAnimation)animation
 {
-    
+    if (indexPaths.count == 0) {
+        return;
+    }
 }
+
 - (void)reloadRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRowAnimation:(JCTableViewRowAnimation)animation
 {
-    
+    if (indexPaths.count == 0) {
+        return;
+    }
 }
-
-
 
 @end

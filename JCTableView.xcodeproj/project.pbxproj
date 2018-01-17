@@ -16,6 +16,9 @@
 		593E52FC200702A000020C15 /* JCTableViewUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E52FB200702A000020C15 /* JCTableViewUITests.m */; };
 		593E530F20073EDB00020C15 /* JCTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E530E20073EDB00020C15 /* JCTableViewCell.m */; };
 		593E53122007505B00020C15 /* JCTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E53102007505B00020C15 /* JCTableView.m */; };
+		59985B2C200C8C6800E686A0 /* JCAppleTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 59985B2B200C8C6800E686A0 /* JCAppleTableViewController.m */; };
+		59985B2F200C8CFF00E686A0 /* JCRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 59985B2E200C8CFF00E686A0 /* JCRootViewController.m */; };
+		59985B37200CAA0400E686A0 /* FPSDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = 59985B36200CAA0400E686A0 /* FPSDisplay.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +59,12 @@
 		593E53102007505B00020C15 /* JCTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JCTableView.m; sourceTree = "<group>"; };
 		593E53112007505B00020C15 /* JCTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JCTableView.h; sourceTree = "<group>"; };
 		595CDEF82008532F00E60264 /* JCTableViewCellPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JCTableViewCellPrivate.h; sourceTree = "<group>"; };
+		59985B2A200C8C6800E686A0 /* JCAppleTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JCAppleTableViewController.h; sourceTree = "<group>"; };
+		59985B2B200C8C6800E686A0 /* JCAppleTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JCAppleTableViewController.m; sourceTree = "<group>"; };
+		59985B2D200C8CFF00E686A0 /* JCRootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JCRootViewController.h; sourceTree = "<group>"; };
+		59985B2E200C8CFF00E686A0 /* JCRootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JCRootViewController.m; sourceTree = "<group>"; };
+		59985B35200CAA0400E686A0 /* FPSDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPSDisplay.h; sourceTree = "<group>"; };
+		59985B36200CAA0400E686A0 /* FPSDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPSDisplay.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +116,11 @@
 			isa = PBXGroup;
 			children = (
 				593E53092007372800020C15 /* JCTableView */,
+				59985B34200CAA0400E686A0 /* FPSDisplayTool */,
+				59985B2D200C8CFF00E686A0 /* JCRootViewController.h */,
+				59985B2E200C8CFF00E686A0 /* JCRootViewController.m */,
+				59985B2A200C8C6800E686A0 /* JCAppleTableViewController.h */,
+				59985B2B200C8C6800E686A0 /* JCAppleTableViewController.m */,
 				593E52DA2007029F00020C15 /* JCTableViewController.h */,
 				593E52DB2007029F00020C15 /* JCTableViewController.m */,
 				593E52D72007029F00020C15 /* AppDelegate.h */,
@@ -147,6 +161,15 @@
 				595CDEF82008532F00E60264 /* JCTableViewCellPrivate.h */,
 			);
 			path = JCTableView;
+			sourceTree = "<group>";
+		};
+		59985B34200CAA0400E686A0 /* FPSDisplayTool */ = {
+			isa = PBXGroup;
+			children = (
+				59985B35200CAA0400E686A0 /* FPSDisplay.h */,
+				59985B36200CAA0400E686A0 /* FPSDisplay.m */,
+			);
+			path = FPSDisplayTool;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -284,6 +307,9 @@
 				593E530F20073EDB00020C15 /* JCTableViewCell.m in Sources */,
 				593E53122007505B00020C15 /* JCTableView.m in Sources */,
 				593E52DC2007029F00020C15 /* JCTableViewController.m in Sources */,
+				59985B2F200C8CFF00E686A0 /* JCRootViewController.m in Sources */,
+				59985B2C200C8C6800E686A0 /* JCAppleTableViewController.m in Sources */,
+				59985B37200CAA0400E686A0 /* FPSDisplay.m in Sources */,
 				593E52E72007029F00020C15 /* main.m in Sources */,
 				593E52D92007029F00020C15 /* AppDelegate.m in Sources */,
 			);

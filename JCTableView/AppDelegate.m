@@ -7,7 +7,8 @@
 //
 
 #import "AppDelegate.h"
-#import "JCTableViewController.h"
+#import "JCRootViewController.h"
+#import "FPSDisplay.h"
 
 @interface AppDelegate ()
 
@@ -21,9 +22,12 @@
     // Override point for customization after application launch.
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     //self.window.backgroundColor = [UIColor whiteColor];
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[JCTableViewController new]];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[JCRootViewController new]];
     [self.window setRootViewController:navController];
     [self.window makeKeyAndVisible];
+    
+    /// FPS
+    [FPSDisplay shareFPSDisplay];
     
     return YES;
 }
