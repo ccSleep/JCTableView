@@ -321,7 +321,12 @@
 
 - (NSArray<NSIndexPath *> *)_sortedIndexPathForVisibleCells
 {
-    NSArray<NSIndexPath *> *sortedVisibleIndexPaths = [self.visibleIndexCellMap.allKeys sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {
+    return [self _sortedIndexPaths:self.visibleIndexCellMap.allKeys];
+}
+
+- (NSArray<NSIndexPath *> *)_sortedIndexPaths:(NSArray<NSIndexPath *> *)indexPaths
+{
+    NSArray<NSIndexPath *> *sortedVisibleIndexPaths = [indexPaths sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {
         if (obj1.section < obj2.section) {
             return NSOrderedAscending;
         }
@@ -367,13 +372,14 @@
     // resize
     [self _resizeTableContent];
     
-    // sorted
-    NSArray<NSIndexPath *> *sortedVisibleIndexPaths = [self _sortedIndexPathForVisibleCells];
-    [indexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull indexPath, NSUInteger idx, BOOL * _Nonnull stop) {
+    NSArray<NSIndexPath *> *sortedIndexPaths = [self _sortedIndexPaths:indexPaths];
+    [sortedIndexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull indexPath, NSUInteger idx, BOOL * _Nonnull stop) {
         if (![self _invalidIndexPath:indexPath]) {
             
-            // visible
+            // sorted visible
+            NSArray<NSIndexPath *> *sortedVisibleIndexPaths = [self _sortedIndexPathForVisibleCells];
             if ([sortedVisibleIndexPaths containsObject:indexPath]) {
+                // 找出插入位置后的cell，修改对应的 visibleIndexCellMap
                 NSMutableArray<NSIndexPath *> *afterIndexPathsInSameSection = [NSMutableArray array];
                 for (NSIndexPath *oneIndex in [sortedVisibleIndexPaths reverseObjectEnumerator]) {
                     if (oneIndex.section < indexPath.section) {
@@ -388,16 +394,15 @@
                 }
                 [self.visibleIndexCellMap removeObjectForKey:indexPath];
                 
+                // new cell
                 JCTableViewCell *cell = [self cellForRowAtIndexPath:indexPath created:YES];
                 [self _insertCell:cell atIndexPath:indexPath];
                 
                 CGRect destFrame = cell.frame;
-                cell.frame = CGRectOffset(destFrame, 0, -CGRectGetHeight(destFrame));
-                
-                
+                cell.frame = CGRectOffset(destFrame, -CGRectGetWidth(destFrame), 0);
                 
                 // animation
-                void (^animation)(void) = ^{
+                void (^insertAnimation)(void) = ^{
                     cell.frame = destFrame;
                     
                     [afterIndexPathsInSameSection enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -406,12 +411,8 @@
                     }];
                 };
                 
-//                [UIView animateWithDuration:.25f animations:^{
-//                    animation();
-//                }];
-                
                 [UIView animateWithDuration:.25f delay:0.f options:UIViewAnimationOptionTransitionFlipFromRight animations:^{
-                    animation();
+                    insertAnimation();
                 } completion:^(BOOL finished) {
                     
                 }];

@@ -71,24 +71,25 @@
 #pragma mark - Action
 - (IBAction)addNewCell:(id)sender
 {
-    /*
     NSInteger row0 = random() % self.colors.count;
     NSInteger row1 = random() % self.colors.count;
     NSMutableIndexSet *set = [NSMutableIndexSet new];
+    row0 = 1;
+    row1 = 3;
     [set addIndex:row0];
     [set addIndex:row1];
     [self.colors insertObjects:@[ [UIColor blackColor], [UIColor blackColor] ] atIndexes:set];
     
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row0 inSection:0];
     NSIndexPath *indexPath1 = [NSIndexPath indexPathForRow:row1 inSection:0];
-    [self.tableView insertRowsAtIndexPaths:@[ indexPath, indexPath1 ] withRowAnimation:JCTableViewRowAnimationFade];
-     */
+    [self.tableView insertRowsAtIndexPaths:@[ indexPath1, indexPath ] withRowAnimation:JCTableViewRowAnimationFade];
     
+    /*
     NSInteger row = 0;
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
     [self.colors insertObject:[UIColor blackColor] atIndex:row];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:JCTableViewRowAnimationFade];
-    
+    */
     
 }
 
@@ -122,6 +123,8 @@
     if (!cell) {
         cell = [[JCTableViewCell alloc] initWithReuseIdentifier:@"cell"];
     }
+    cell.textLabel.text = [NSString stringWithFormat:@"%zd-%zd", indexPath.section, indexPath.row];
+    cell.textLabel.textColor = [UIColor whiteColor];
     cell.backgroundColor = self.colors[indexPath.row];
     return cell;
 }

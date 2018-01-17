@@ -12,8 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface JCTableViewCell : UIView
 
-@property (nonatomic, strong) UITableViewCell *tableView;
-
 // default is nil.  label will be created if necessary.
 @property (nonatomic, strong, nullable, readonly) UILabel *textLabel;
 

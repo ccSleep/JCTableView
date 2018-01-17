@@ -45,10 +45,6 @@
     [super viewDidLayoutSubviews];
     
     self.tableView.frame = self.view.bounds;
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSLog(@"self.tableView.contentSize:%@", NSStringFromCGSize(self.tableView.contentSize));
-    });
 }
 
 - (UIColor *)randomColor
@@ -76,23 +72,20 @@
 {
     NSInteger row0 = random() % self.colors.count;
     NSInteger row1 = random() % self.colors.count;
+    row0 = 1;
+    row1 = 3;
     NSMutableIndexSet *set = [NSMutableIndexSet new];
     [set addIndex:row0];
     [set addIndex:row1];
-//    [self.colors insertObjects:@[ [UIColor blackColor], [UIColor blackColor] ] atIndexes:set ];
-    [self.colors insertObject:[UIColor blackColor] atIndex:0];
+    [self.colors insertObjects:@[ [UIColor blackColor], [UIColor blackColor] ] atIndexes:set ];
     
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row0 inSection:0];
     NSIndexPath *indexPath1 = [NSIndexPath indexPathForRow:row1 inSection:0];
     
     CFTimeInterval timeStart = CACurrentMediaTime();
-    [self.tableView insertRowsAtIndexPaths:@[ indexPath /*, indexPath1*/ ] withRowAnimation:UITableViewRowAnimationLeft];
+    [self.tableView insertRowsAtIndexPaths:@[ indexPath , indexPath1 ] withRowAnimation:UITableViewRowAnimationLeft];
     // 0.004151
     NSLog(@"insertRowsAtIndexPaths timeEclips:%f", CACurrentMediaTime() - timeStart);
-    
-//    NSLog(@"self.tableView.contentSize:%@", NSStringFromCGSize(self.tableView.contentSize));
-    
-    self.tableView.contentSize = CGSizeMake(self.view.frame.size.width, 100);
 }
 
 - (IBAction)reloadCells:(id)sender
@@ -125,7 +118,8 @@
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
     }
-    cell.textLabel.text = @"UITableViewCell";
+    cell.textLabel.text = [NSString stringWithFormat:@"%zd-%zd", indexPath.section, indexPath.row];
+    cell.textLabel.textColor = [UIColor whiteColor];
     cell.backgroundColor = self.colors[indexPath.row];
     return cell;
 }
