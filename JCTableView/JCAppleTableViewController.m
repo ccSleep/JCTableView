@@ -35,8 +35,9 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addNewCell:)];
-    UIBarButtonItem *reloadButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(reloadCells:)];
-    self.navigationItem.rightBarButtonItems = @[ reloadButton, addButton ];
+    UIBarButtonItem *reloadButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(reloadCells:)];
+    UIBarButtonItem *reloadTotalButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(reloadTotalCells:)];
+    self.navigationItem.rightBarButtonItems = @[ reloadTotalButton, reloadButton, addButton ];
     [self.view addSubview:self.tableView];
 }
 
@@ -95,6 +96,13 @@
 }
 
 - (IBAction)reloadCells:(id)sender
+{
+    NSIndexPath *firstIndex = [NSIndexPath indexPathForRow:0 inSection:0];
+    NSIndexPath *secondIndex = [NSIndexPath indexPathForRow:2 inSection:0];
+    [self.tableView reloadRowsAtIndexPaths:@[ firstIndex, secondIndex ] withRowAnimation:UITableViewRowAnimationBottom];
+}
+
+- (IBAction)reloadTotalCells:(id)sender
 {
 //    NSIndexPath *firstIndex = [NSIndexPath indexPathForRow:0 inSection:0];
 //    NSIndexPath *secondIndex = [NSIndexPath indexPathForRow:1 inSection:0];

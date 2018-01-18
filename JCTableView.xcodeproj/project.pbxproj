@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		591C5A44201089FB00FB7A32 /* JCTableView+JCAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 591C5A43201089FB00FB7A32 /* JCTableView+JCAnimation.m */; };
 		593E52D92007029F00020C15 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E52D82007029F00020C15 /* AppDelegate.m */; };
 		593E52DC2007029F00020C15 /* JCTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E52DB2007029F00020C15 /* JCTableViewController.m */; };
 		593E52E12007029F00020C15 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 593E52E02007029F00020C15 /* Assets.xcassets */; };
@@ -39,6 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		591C5A42201089FB00FB7A32 /* JCTableView+JCAnimation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "JCTableView+JCAnimation.h"; sourceTree = "<group>"; };
+		591C5A43201089FB00FB7A32 /* JCTableView+JCAnimation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "JCTableView+JCAnimation.m"; sourceTree = "<group>"; };
 		593E52D42007029F00020C15 /* JCTableView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JCTableView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		593E52D72007029F00020C15 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		593E52D82007029F00020C15 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -156,6 +159,8 @@
 			children = (
 				593E53112007505B00020C15 /* JCTableView.h */,
 				593E53102007505B00020C15 /* JCTableView.m */,
+				591C5A42201089FB00FB7A32 /* JCTableView+JCAnimation.h */,
+				591C5A43201089FB00FB7A32 /* JCTableView+JCAnimation.m */,
 				593E530D20073EDB00020C15 /* JCTableViewCell.h */,
 				593E530E20073EDB00020C15 /* JCTableViewCell.m */,
 				595CDEF82008532F00E60264 /* JCTableViewCellPrivate.h */,
@@ -310,6 +315,7 @@
 				59985B2F200C8CFF00E686A0 /* JCRootViewController.m in Sources */,
 				59985B2C200C8C6800E686A0 /* JCAppleTableViewController.m in Sources */,
 				59985B37200CAA0400E686A0 /* FPSDisplay.m in Sources */,
+				591C5A44201089FB00FB7A32 /* JCTableView+JCAnimation.m in Sources */,
 				593E52E72007029F00020C15 /* main.m in Sources */,
 				593E52D92007029F00020C15 /* AppDelegate.m in Sources */,
 			);

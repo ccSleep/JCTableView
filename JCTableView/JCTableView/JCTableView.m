@@ -7,6 +7,7 @@
 //
 
 #import "JCTableView.h"
+#import "JCTableView+JCAnimation.h"
 #import "JCTableViewCellPrivate.h"
 
 #define kJCTableViewCellHeightDefault   44.f
@@ -146,7 +147,6 @@
     if (cell) {
         [cell prepareForReuse];
         [cell removeFromSuperview];
-        
         [self.recycledCells addObject:cell];
     }
 }
@@ -355,44 +355,6 @@
 }
 
 #pragma mark - Reload
-- (void)_prepareCell:(JCTableViewCell *)cell padding:(CGFloat)padding withAnimation:(JCTableViewRowAnimation)animation
-{
-    CGRect startFrame = cell.frame;
-    
-    switch (animation) {
-        case JCTableViewRowAnimationNone:
-            break;
-            
-        case JCTableViewRowAnimationFade:
-            cell.alpha = 0.f;
-            break;
-            
-        case JCTableViewRowAnimationRight:
-            startFrame = CGRectOffset(cell.frame, CGRectGetWidth(cell.frame), 0);
-            startFrame.size.height = 0.f;
-            break;
-            
-        case JCTableViewRowAnimationLeft:
-            startFrame = CGRectOffset(cell.frame, -CGRectGetWidth(cell.frame), 0);
-            startFrame.size.height = 0.f;
-            break;
-            
-        case JCTableViewRowAnimationTop:
-        case JCTableViewRowAnimationBottom:
-            startFrame = CGRectOffset(cell.frame, 0, -CGRectGetHeight(cell.frame));
-            break;
-        
-        default:
-            break;
-    }
-    
-    // previous
-    startFrame.origin.y -= padding;
-//    NSLog(@"startFrame.origin.y:%f", startFrame.origin.y);
-    
-    cell.frame = startFrame;
-}
-
 - (void)reloadData
 {
     // resize
@@ -444,7 +406,7 @@
                 
                 // 动画初始高度
                 CGRect destFrame = cell.frame;
-                [self _prepareCell:cell padding:padding withAnimation:animation];
+                [self _prepareInsertCell:cell padding:padding withAnimation:animation];
                 padding += CGRectGetHeight(destFrame);
                 
                 // animation
@@ -487,6 +449,51 @@
     if (indexPaths.count == 0) {
         return;
     }
+    
+    // resize
+    [self _resizeTableContent];
+    
+    BOOL isAnimationTop = (animation == JCTableViewRowAnimationTop);
+    BOOL isAnimationBottom = (animation == JCTableViewRowAnimationBottom);
+    BOOL isAnimationVertical = isAnimationTop || isAnimationBottom;
+    
+    [indexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull indexPath, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (![self _invalidIndexPath:indexPath]) {
+            // enqueue
+            JCTableViewCell *cell = self.visibleIndexCellMap[indexPath];
+            NSInteger zIndex = [self.subviews indexOfObject:cell];
+            [self.visibleIndexCellMap removeObjectForKey:indexPath];
+            // 垂直方向动画，延时回收cell，做动画使用
+            if (!isAnimationVertical) {
+                [self _enqueueReusableCell:cell];
+            }
+            
+            // cell 从上往下更新，sendBack 防止图层遮挡，看不清动画效果
+            if (isAnimationBottom) {
+                [self sendSubviewToBack:cell];
+            }
+            
+            // new cell
+            JCTableViewCell *newCell = [self cellForRowAtIndexPath:indexPath created:YES];
+            [self _insertCell:newCell atIndexPath:indexPath];
+            [self insertSubview:newCell atIndex:zIndex];
+            
+            // 动画初始高度
+            CGRect destFrame = isAnimationTop ? [self _prepareReloadFrame:cell.frame withAnimation:animation] : newCell.frame;
+            [self _prepareReloadCell:newCell withAnimation:animation];
+            
+            // animation，JCTableViewRowAnimationNone 时可以不需要动画
+            JCTableViewCell *animatedCell = isAnimationTop ? cell : newCell;
+            [UIView animateWithDuration:.35 animations:^{
+                animatedCell.frame = destFrame;
+                animatedCell.alpha = 1.f;
+            } completion:^(BOOL finished) {
+                if (isAnimationVertical) {
+                    [self _enqueueReusableCell:cell];
+                }
+            }];
+        }
+    }];
 }
 
 #pragma mark - Action
