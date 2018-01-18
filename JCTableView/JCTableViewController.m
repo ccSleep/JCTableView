@@ -135,4 +135,14 @@
     return 60.f;
 }
 
+- (void)tableView:(JCTableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSLog(@"didSelectRowAtIndexPath:%@", indexPath);
+}
+
+- (void)tableView:(JCTableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSLog(@"didDeselectRowAtIndexPath:%@", indexPath);
+}
+
 @end

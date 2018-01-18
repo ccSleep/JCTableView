@@ -45,8 +45,8 @@ typedef NS_ENUM(NSInteger, JCTableViewRowAnimation) {
 - (CGFloat)tableView:(JCTableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath;
 
 // Called after the user changes the selection.
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
-- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath;
+- (void)tableView:(JCTableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
+- (void)tableView:(JCTableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath;
 @end
 
 
@@ -70,7 +70,12 @@ typedef NS_ENUM(NSInteger, JCTableViewRowAnimation) {
 - (nullable NSIndexPath *)indexPathForCell:(JCTableViewCell *)cell;                      // returns nil if cell is not visible
 - (nullable __kindof JCTableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath;   // returns nil if cell is not visible or index path is out of range
 @property (nonatomic, strong, readonly) NSArray<__kindof JCTableViewCell *> *visibleCells;
-@property (nonatomic, strong, nullable, readonly) NSArray<NSIndexPath *> *indexPathsForVisibleRows;
+@property (nonatomic, strong, nullable, readonly) NSArray<NSIndexPath *> *indexPathsForVisibleRows; // sorted
+
+
+// ----------------------------------------------------------------------
+//MARK: Selection
+@property (nonatomic, strong, nullable, readonly) NSIndexPath *indexPathForSelectedRow; // returns nil or index path representing section and row of selection.
 
 
 // ----------------------------------------------------------------------

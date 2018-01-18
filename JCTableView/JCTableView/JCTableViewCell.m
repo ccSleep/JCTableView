@@ -12,10 +12,10 @@
 #define kJCTableCellMargin  20.f
 
 @interface JCTableViewCell()
+@property (nonatomic, strong) UITableViewCell *cell;
 @property (nonatomic, strong, nullable, readwrite) UILabel *textLabel;
 
 @property (nonatomic, strong, readwrite) UIView *contentView;
-@property (nonatomic, strong, readwrite) UIView *selectedBackgroundView;
 
 @property (nonatomic, copy, readwrite) NSString *reuseIdentifier;
 @end
@@ -41,6 +41,8 @@
 - (void)_setup
 {
     _contentView = [UIView new];
+    _selectedBackgroundView = [UIView new];
+    _selectedBackgroundView.backgroundColor = [UIColor colorWithRed:217/255.f green:217/255.f blue:217/255.f alpha:1.f];
     _textLabel = [UILabel new];
     
     [self addSubview:_contentView];
@@ -52,6 +54,7 @@
     
     self.contentView.frame = self.bounds;
     
+    // textLabel
     if (self.textLabel.text) {
         CGSize size = self.bounds.size;
         self.textLabel.frame = CGRectMake(kJCTableCellMargin, 0, size.width - 2*kJCTableCellMargin, size.height);
@@ -60,13 +63,57 @@
     else {
         [self.textLabel removeFromSuperview];
     }
+    
+    // selected
+    if (self.isSelected) {
+        self.selectedBackgroundView.frame = self.bounds;
+        [self insertSubview:self.selectedBackgroundView atIndex:0];
+    }
+    else {
+        [self.selectedBackgroundView removeFromSuperview];
+    }
 }
 
 - (void)prepareForReuse
 {
     self.indexPath = nil;
+    
+    [self setSelected:NO animated:NO];
 }
 
 #pragma mark - Accessor
+- (void)setSelectedBackgroundView:(UIView *)selectedBackgroundView
+{
+    if (_selectedBackgroundView != selectedBackgroundView) {
+        [_selectedBackgroundView removeFromSuperview];
+        _selectedBackgroundView = selectedBackgroundView;
+        
+        [self setNeedsLayout];
+    }
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated
+{
+    if (_selected == selected) {
+        return;
+    }
+    
+    void (^animation)(void) = ^{
+        _selected = selected;
+        [self setNeedsLayout];
+    };
+    
+    if (!animated) {
+        animation();
+    }
+    else {
+        [UIView animateWithDuration:.25f animations:^{
+            animation();
+        }];
+    }
+}
+
+#pragma mark -
+
 
 @end

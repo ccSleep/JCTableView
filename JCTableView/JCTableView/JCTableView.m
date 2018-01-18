@@ -23,6 +23,7 @@
 @property (nonatomic, strong) NSMutableDictionary<NSString *, Class> *registerdIdentifierClassMap;  //@{ id : Class }
 @property (nonatomic, strong) NSMutableDictionary<NSIndexPath *, __kindof JCTableViewCell *> *visibleIndexCellMap; //@{ indexPath : cell }
 @property (nonatomic, strong, nullable, readwrite) NSArray<NSIndexPath *> *indexPathsForVisibleRows;    //sorted
+@property (nonatomic, strong, nullable, readwrite) NSIndexPath *indexPathForSelectedRow;    // returns nil or index path representing section and row of selection.
 
 /// layout
 @property (nonatomic, strong) NSMutableDictionary<NSIndexPath *, NSNumber *> *cellIndexHeightMap;   // @{ indexPath : @(float) }
@@ -60,6 +61,9 @@
     _numberOfSections = 1;
     
     self.alwaysBounceVertical = YES;
+    
+    UITapGestureRecognizer *tapGR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleTableViewTapped:)];
+    [self addGestureRecognizer:tapGR];
 }
 
 - (void)layoutSubviews
@@ -462,6 +466,7 @@
     }];
     
     _indexPathsForVisibleRows = [self _indexPathForVisibleCells];
+    [self _recoverUnvisibleCellsWithVisibleIndexPaths:_indexPathsForVisibleRows];
     
     //0.002292
 //    NSLog(@"insertRowsAtIndexPaths timeEclipse:%f", CACurrentMediaTime() - timeStart);
@@ -482,6 +487,40 @@
     if (indexPaths.count == 0) {
         return;
     }
+}
+
+#pragma mark - Action
+- (IBAction)_handleTableViewTapped:(UITapGestureRecognizer *)sender
+{
+    __block NSIndexPath *oldSelectedIndexPath = self.indexPathForSelectedRow;
+    
+    CGPoint point = [sender locationInView:self];
+    [self.visibleCells enumerateObjectsUsingBlock:^(__kindof JCTableViewCell * _Nonnull cell, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (CGRectContainsPoint(cell.frame, point)) {
+            self.indexPathForSelectedRow = cell.indexPath;
+            [cell setSelected:YES animated:YES];
+            
+            // select
+            if (kDelegateRespondsToSelector(@selector(tableView:didSelectRowAtIndexPath:))) {
+                [self.delegate tableView:self didSelectRowAtIndexPath:cell.indexPath];
+            }
+        }
+        else {
+            [cell setSelected:NO animated:NO];
+            
+            // deselect
+            if (oldSelectedIndexPath) {
+                if (cell.indexPath.section == oldSelectedIndexPath.section &&
+                    cell.indexPath.row == oldSelectedIndexPath.row) {
+                    
+                    if (kDelegateRespondsToSelector(@selector(tableView:didDeselectRowAtIndexPath:))) {
+                        [self.delegate tableView:self didDeselectRowAtIndexPath:cell.indexPath];
+                    }
+                    oldSelectedIndexPath = nil;
+                }
+            }
+        }
+    }];
 }
 
 @end

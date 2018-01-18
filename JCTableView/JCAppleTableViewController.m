@@ -45,6 +45,12 @@
     [super viewDidLayoutSubviews];
     
     self.tableView.frame = self.view.bounds;
+    
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        NSIndexPath *index = [NSIndexPath indexPathForRow:0 inSection:0];
+//        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:index];
+//        NSLog(@"cell.subviews:%@", cell.subviews);
+//    });
 }
 
 - (UIColor *)randomColor
