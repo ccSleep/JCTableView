@@ -72,8 +72,8 @@
 {
     NSInteger row0 = random() % self.colors.count;
     NSInteger row1 = random() % self.colors.count;
-    row0 = 1;
-    row1 = 3;
+    row0 = 0;
+    row1 = 2;
     NSMutableIndexSet *set = [NSMutableIndexSet new];
     [set addIndex:row0];
     [set addIndex:row1];
@@ -83,7 +83,7 @@
     NSIndexPath *indexPath1 = [NSIndexPath indexPathForRow:row1 inSection:0];
     
     CFTimeInterval timeStart = CACurrentMediaTime();
-    [self.tableView insertRowsAtIndexPaths:@[ indexPath , indexPath1 ] withRowAnimation:UITableViewRowAnimationLeft];
+    [self.tableView insertRowsAtIndexPaths:@[ indexPath , indexPath1 ] withRowAnimation:UITableViewRowAnimationFade];
     // 0.004151
     NSLog(@"insertRowsAtIndexPaths timeEclips:%f", CACurrentMediaTime() - timeStart);
 }

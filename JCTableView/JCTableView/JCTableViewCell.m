@@ -64,7 +64,7 @@
 
 - (void)prepareForReuse
 {
-    
+    self.indexPath = nil;
 }
 
 #pragma mark - Accessor

@@ -74,8 +74,8 @@
     NSInteger row0 = random() % self.colors.count;
     NSInteger row1 = random() % self.colors.count;
     NSMutableIndexSet *set = [NSMutableIndexSet new];
-    row0 = 1;
-    row1 = 3;
+    row0 = 0;
+    row1 = 2;
     [set addIndex:row0];
     [set addIndex:row1];
     [self.colors insertObjects:@[ [UIColor blackColor], [UIColor blackColor] ] atIndexes:set];

@@ -10,5 +10,5 @@
 
 @interface JCTableViewCell ()
 /// cell 是否被重用注册
-@property (nonatomic, assign, getter=isRegistered) BOOL registered;
+@property (nonatomic, strong) NSIndexPath *indexPath;
 @end

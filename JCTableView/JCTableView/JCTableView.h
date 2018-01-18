@@ -67,7 +67,7 @@ typedef NS_ENUM(NSInteger, JCTableViewRowAnimation) {
 //- (CGRect)rectForFooterInSection:(NSInteger)section;
 - (CGRect)rectForRowAtIndexPath:(NSIndexPath *)indexPath;
 
-- (nullable NSIndexPath *)indexPathForCell:(UITableViewCell *)cell;                      // returns nil if cell is not visible
+- (nullable NSIndexPath *)indexPathForCell:(JCTableViewCell *)cell;                      // returns nil if cell is not visible
 - (nullable __kindof JCTableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath;   // returns nil if cell is not visible or index path is out of range
 @property (nonatomic, strong, readonly) NSArray<__kindof JCTableViewCell *> *visibleCells;
 @property (nonatomic, strong, nullable, readonly) NSArray<NSIndexPath *> *indexPathsForVisibleRows;
