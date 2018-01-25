@@ -22,15 +22,15 @@
 #pragma mark - LifeCycle
 - (instancetype)initWithReuseIdentifier:(NSString *)reuseIdentifier
 {
-    if (self = [super init]) {
+    if (self = [self _init]) {
         _reuseIdentifier = reuseIdentifier;
     }
     return self;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame
+- (instancetype)_init
 {
-    if (self = [super initWithFrame:frame]) {
+    if (self = [super init]) {
         [self _setup];
     }
     return self;

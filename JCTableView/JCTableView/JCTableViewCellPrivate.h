@@ -11,6 +11,5 @@
 
 @interface JCTableViewCell ()
 @property (nonatomic, strong) NSIndexPath *indexPath;
-//@property (nonatomic, assign, getter=isSwiping) BOOL swiping;
 @property (nonatomic, weak) JCSwipeActionPullView *swipingView;
 @end

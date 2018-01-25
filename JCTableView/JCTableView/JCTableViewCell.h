@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)prepareForReuse NS_REQUIRES_SUPER;  
 
 - (instancetype)initWithReuseIdentifier:(nullable NSString *)reuseIdentifier;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 

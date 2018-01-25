@@ -10,6 +10,7 @@
 #import "JCTableView+JCAnimation.h"
 #import "JCTableViewCellPrivate.h"
 #import "JCSwipeActionPullView.h"
+#import <objc/runtime.h>
 
 #define kJCTableViewCellHeightDefault   44.f
 
@@ -153,7 +154,9 @@
         // identifier has been registered
         if ([self.registerdIdentifierClassMap.allKeys containsObject:identifier]) {
             Class cls = [self.registerdIdentifierClassMap objectForKey:identifier];
-            NSLog(@"cls:%@", cls);
+            if (cls && [cls instancesRespondToSelector:@selector(initWithReuseIdentifier:)]) {
+                cell = [[cls alloc] initWithReuseIdentifier:identifier];
+            }
         }
     }
     return cell;
