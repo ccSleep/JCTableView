@@ -9,6 +9,7 @@
 #import "JCTableView.h"
 #import "JCTableView+JCAnimation.h"
 #import "JCTableViewCellPrivate.h"
+#import "JCSwipeActionPullView.h"
 
 #define kJCTableViewCellHeightDefault   44.f
 
@@ -32,6 +33,13 @@
 
 /// sections
 @property (nonatomic, assign, readwrite) NSInteger numberOfSections;
+
+/// editing
+@property (nonatomic, assign) BOOL canEditRow;
+
+@property (nonatomic, strong) NSMutableSet<JCSwipeActionPullView *> *recycledSwipeViews;
+@property (nonatomic, strong) JCSwipeActionPullView *previousSwipeView;
+@property (nonatomic, assign) CGPoint panStartPoint;
 @end
 
 @implementation JCTableView
@@ -43,6 +51,7 @@
 {
     if (self = [super initWithFrame:frame]) {
         [self _setup];
+        [self _setupGestureRecognizer];
     }
     return self;
 }
@@ -61,10 +70,22 @@
     ///
     _numberOfSections = 1;
     
-    self.alwaysBounceVertical = YES;
+    /// swipe
+    _recycledSwipeViews = [NSMutableSet setWithCapacity:2];
     
+    self.alwaysBounceVertical = YES;
+}
+
+- (void)_setupGestureRecognizer
+{
+    // tap to selection
     UITapGestureRecognizer *tapGR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleTableViewTapped:)];
     [self addGestureRecognizer:tapGR];
+    
+    // pan to swipe
+    UIPanGestureRecognizer *panGR = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePanGestureRecognizer:)];
+    panGR.maximumNumberOfTouches = 1;
+    [self addGestureRecognizer:panGR];
 }
 
 - (void)layoutSubviews
@@ -103,6 +124,7 @@
     super.delegate = delegate;
     
     _jcDelegate = delegate;
+    _canEditRow = [_jcDelegate respondsToSelector:@selector(tableView:canEditRowAtIndexPath:)];
     
     [self _resizeTableContent];
 }
@@ -442,6 +464,60 @@
     
     // resize
     [self _resizeTableContent];
+    
+    NSArray<NSIndexPath *> *sortedIndexPaths = [self _sortedIndexPaths:indexPaths];
+    [sortedIndexPaths enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSIndexPath * _Nonnull indexPath, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (![self _invalidIndexPath:indexPath]) {
+            
+            // sorted visible
+            NSArray<NSIndexPath *> *sortedVisibleIndexPaths = [self _sortedIndexPathForVisibleCells];
+            if ([sortedVisibleIndexPaths containsObject:indexPath]) {
+                
+                JCTableViewCell *deleteCell = [self cellForRowAtIndexPath:indexPath];
+                
+                // 找出删除位置之后的的cell，修改对应的 visibleIndexCellMap
+                NSMutableArray<NSIndexPath *> *afterIndexPathsInSameSection = [NSMutableArray array];
+                for (NSIndexPath *oneIndex in sortedVisibleIndexPaths) {
+                    if (oneIndex.section < indexPath.section) {
+                        break;
+                    }
+                    else if (oneIndex.section == indexPath.section && oneIndex.row >= indexPath.row) {
+                        NSIndexPath *nextIndexPath = [NSIndexPath indexPathForRow:oneIndex.row + 1 inSection:oneIndex.section];
+                        JCTableViewCell *nextCell = self.visibleIndexCellMap[nextIndexPath];
+                        if (nextCell) {
+                            self.visibleIndexCellMap[oneIndex] = nextCell;
+                            self.visibleIndexCellMap[oneIndex].indexPath = oneIndex;
+                            
+                            [afterIndexPathsInSameSection addObject:oneIndex];
+                        }
+                        else {
+                            [self.visibleIndexCellMap removeObjectForKey:oneIndex];
+                        }
+                    }
+                }
+                
+                // animation
+                void (^deleteAnimation)(void) = ^{
+                    deleteCell.frame = [self _prepareDeleteCell:deleteCell withAnimation:animation];
+                    deleteCell.alpha = 1.f;
+                    
+                    [afterIndexPathsInSameSection enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                        JCTableViewCell *cell = [self cellForRowAtIndexPath:obj];
+                        cell.frame = [self rectForRowAtIndexPath:obj];
+                    }];
+                };
+                
+                [UIView animateWithDuration:.25f animations:^{
+                    deleteAnimation();
+                } completion:^(BOOL finished) {
+                    [self _enqueueReusableCell:deleteCell];
+                }];
+            }
+        }
+    }];
+    
+    _indexPathsForVisibleRows = [self _indexPathForVisibleCells];
+    [self _recoverUnvisibleCellsWithVisibleIndexPaths:_indexPathsForVisibleRows];
 }
 
 - (void)reloadRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRowAnimation:(JCTableViewRowAnimation)animation
@@ -499,6 +575,12 @@
 #pragma mark - Action
 - (IBAction)_handleTableViewTapped:(UITapGestureRecognizer *)sender
 {
+    JCTableViewCell *swipingCell = [self _swipingCell];
+    if (swipingCell) {
+        [swipingCell.swipingView swipeToHide];
+        return;
+    }
+    
     __block NSIndexPath *oldSelectedIndexPath = self.indexPathForSelectedRow;
     
     CGPoint point = [sender locationInView:self];
@@ -528,6 +610,109 @@
             }
         }
     }];
+}
+
+- (IBAction)_handlePanGestureRecognizer:(UIPanGestureRecognizer *)sender
+{
+    if (!self.canEditRow) {
+        return;
+    }
+    
+    CGPoint point = [sender locationInView:self];
+    
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        _panStartPoint = point;
+    }
+    else if (sender.state == UIGestureRecognizerStateChanged) {
+        // swipe left
+        if (point.x < _panStartPoint.x) {
+            [self.visibleCells enumerateObjectsUsingBlock:^(__kindof JCTableViewCell * _Nonnull cell, NSUInteger idx, BOOL * _Nonnull stop) {
+                if (CGRectContainsPoint(cell.frame, point)) {
+                    // swipe
+                    if (!cell.swipingView) {
+                        [self.previousSwipeView swipeToHide];
+                        
+                        JCSwipeActionPullView *swipeView = [self _prepareSwipeViewForCell:cell];
+                        [swipeView swipeToShow];
+                        self.previousSwipeView = swipeView;
+                    }
+                    
+                    *stop = YES;
+                }
+            }];
+        }
+    }
+    else if (sender.state == UIGestureRecognizerStateCancelled) {
+        _panStartPoint = CGPointZero;
+    }
+    else if (sender.state == UIGestureRecognizerStateEnded) {
+        _panStartPoint = CGPointZero;
+    }
+}
+
+#pragma mark - Pan
+- (JCSwipeActionPullView *)_dequeueSwipeView
+{
+    JCSwipeActionPullView *swipeView = [self.recycledSwipeViews anyObject];
+    if (swipeView) {
+        [self.recycledSwipeViews removeObject:swipeView];
+    }
+    else {
+        swipeView = [JCSwipeActionPullView new];
+    }
+    return swipeView;
+}
+
+- (void)_enqueueSwipeView:(JCSwipeActionPullView *)swipeView
+{
+    if (swipeView) {
+        swipeView.swipingCell = nil;
+        [self.recycledSwipeViews addObject:swipeView];
+        [swipeView removeFromSuperview];
+        
+        if ([swipeView isEqual:self.previousSwipeView]) {
+            self.previousSwipeView = nil;
+        }
+    }
+}
+
+- (JCSwipeActionPullView *)_prepareSwipeViewForCell:(JCTableViewCell *)cell
+{
+    if (!cell) {
+        return nil;
+    }
+    
+    __weak __typeof(self) weakSelf = self;
+    JCSwipeActionPullView *swipeView = [self _dequeueSwipeView];
+    cell.swipingView = swipeView;   //weak
+    swipeView.swipingCell = cell;   //weak
+    swipeView.hideCompletionHandler = ^(JCSwipeActionPullView *swipe) {
+        __strong __typeof(weakSelf) strongSelf = weakSelf;
+        [strongSelf _enqueueSwipeView:swipe];
+    };
+    swipeView.actionHandler = ^(JCTableViewCell *associatedCell) {
+        __strong __typeof(weakSelf) strongSelf = weakSelf;
+        if (strongSelf.delegate &&
+            [strongSelf.delegate respondsToSelector:@selector(tableView:commitEditingForRowAtIndexPath:)]) {
+            [strongSelf.delegate tableView:self commitEditingForRowAtIndexPath:associatedCell.indexPath];
+        }
+    };
+    swipeView.frame = CGRectMake(CGRectGetMaxX(cell.frame), CGRectGetMinY(cell.frame), JCSwipeActionPullViewWidth, CGRectGetHeight(cell.frame));
+    [self addSubview:swipeView];
+    
+    return swipeView;
+}
+
+- (JCTableViewCell *)_swipingCell
+{
+    __block JCTableViewCell *swipingCell = nil;
+    [self.visibleCells enumerateObjectsUsingBlock:^(__kindof JCTableViewCell * _Nonnull cell, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (cell.swipingView) {
+            swipingCell = cell;
+            *stop = YES;
+        }
+    }];
+    return swipingCell;
 }
 
 @end

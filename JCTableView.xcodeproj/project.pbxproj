@@ -17,6 +17,7 @@
 		593E52FC200702A000020C15 /* JCTableViewUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E52FB200702A000020C15 /* JCTableViewUITests.m */; };
 		593E530F20073EDB00020C15 /* JCTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E530E20073EDB00020C15 /* JCTableViewCell.m */; };
 		593E53122007505B00020C15 /* JCTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E53102007505B00020C15 /* JCTableView.m */; };
+		599086342011ECBC00FF4DB2 /* JCSwipeActionPullView.m in Sources */ = {isa = PBXBuildFile; fileRef = 599086332011ECBC00FF4DB2 /* JCSwipeActionPullView.m */; };
 		59985B2C200C8C6800E686A0 /* JCAppleTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 59985B2B200C8C6800E686A0 /* JCAppleTableViewController.m */; };
 		59985B2F200C8CFF00E686A0 /* JCRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 59985B2E200C8CFF00E686A0 /* JCRootViewController.m */; };
 		59985B37200CAA0400E686A0 /* FPSDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = 59985B36200CAA0400E686A0 /* FPSDisplay.m */; };
@@ -62,6 +63,8 @@
 		593E53102007505B00020C15 /* JCTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JCTableView.m; sourceTree = "<group>"; };
 		593E53112007505B00020C15 /* JCTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JCTableView.h; sourceTree = "<group>"; };
 		595CDEF82008532F00E60264 /* JCTableViewCellPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JCTableViewCellPrivate.h; sourceTree = "<group>"; };
+		599086322011ECBC00FF4DB2 /* JCSwipeActionPullView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JCSwipeActionPullView.h; sourceTree = "<group>"; };
+		599086332011ECBC00FF4DB2 /* JCSwipeActionPullView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JCSwipeActionPullView.m; sourceTree = "<group>"; };
 		59985B2A200C8C6800E686A0 /* JCAppleTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JCAppleTableViewController.h; sourceTree = "<group>"; };
 		59985B2B200C8C6800E686A0 /* JCAppleTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JCAppleTableViewController.m; sourceTree = "<group>"; };
 		59985B2D200C8CFF00E686A0 /* JCRootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JCRootViewController.h; sourceTree = "<group>"; };
@@ -164,6 +167,8 @@
 				593E530D20073EDB00020C15 /* JCTableViewCell.h */,
 				593E530E20073EDB00020C15 /* JCTableViewCell.m */,
 				595CDEF82008532F00E60264 /* JCTableViewCellPrivate.h */,
+				599086322011ECBC00FF4DB2 /* JCSwipeActionPullView.h */,
+				599086332011ECBC00FF4DB2 /* JCSwipeActionPullView.m */,
 			);
 			path = JCTableView;
 			sourceTree = "<group>";
@@ -318,6 +323,7 @@
 				591C5A44201089FB00FB7A32 /* JCTableView+JCAnimation.m in Sources */,
 				593E52E72007029F00020C15 /* main.m in Sources */,
 				593E52D92007029F00020C15 /* AppDelegate.m in Sources */,
+				599086342011ECBC00FF4DB2 /* JCSwipeActionPullView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

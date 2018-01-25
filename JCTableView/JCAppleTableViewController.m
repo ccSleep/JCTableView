@@ -34,10 +34,11 @@
     self.title = @"UITableView";
     self.view.backgroundColor = [UIColor whiteColor];
     
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addNewCell:)];
-    UIBarButtonItem *reloadButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(reloadCells:)];
-    UIBarButtonItem *reloadTotalButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(reloadTotalCells:)];
-    self.navigationItem.rightBarButtonItems = @[ reloadTotalButton, reloadButton, addButton ];
+    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithTitle:@"+" style:UIBarButtonItemStylePlain target:self action:@selector(addNewCell:)];
+    UIBarButtonItem *minusButton = [[UIBarButtonItem alloc] initWithTitle:@"-" style:UIBarButtonItemStylePlain target:self action:@selector(minusCell:)];
+    UIBarButtonItem *reloadButton = [[UIBarButtonItem alloc] initWithTitle:@"re" style:UIBarButtonItemStylePlain target:self action:@selector(reloadCells:)];
+    UIBarButtonItem *reloadTotalButton = [[UIBarButtonItem alloc] initWithTitle:@"reload" style:UIBarButtonItemStylePlain target:self action:@selector(reloadTotalCells:)];
+    self.navigationItem.rightBarButtonItems = @[ reloadTotalButton, reloadButton, minusButton, addButton ];
     [self.view addSubview:self.tableView];
 }
 
@@ -95,6 +96,24 @@
     NSLog(@"insertRowsAtIndexPaths timeEclips:%f", CACurrentMediaTime() - timeStart);
 }
 
+- (IBAction)minusCell:(id)sender
+{
+    NSInteger row0 = 0;
+    NSInteger row1 = 2;
+    NSMutableIndexSet *set = [NSMutableIndexSet new];
+    [set addIndex:row0];
+    [set addIndex:row1];
+    [self.colors removeObjectsAtIndexes:set];
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row0 inSection:0];
+    NSIndexPath *indexPath1 = [NSIndexPath indexPathForRow:row1 inSection:0];
+    
+    CFTimeInterval timeStart = CACurrentMediaTime();
+    [self.tableView deleteRowsAtIndexPaths:@[ indexPath , indexPath1 ] withRowAnimation:UITableViewRowAnimationNone];
+    // 0.004151
+    NSLog(@"deleteRowsAtIndexPaths timeEclips:%f", CACurrentMediaTime() - timeStart);
+}
+
 - (IBAction)reloadCells:(id)sender
 {
     NSIndexPath *firstIndex = [NSIndexPath indexPathForRow:0 inSection:0];
@@ -143,4 +162,34 @@
 {
     return 60.f;
 }
+
+//MARK: Editing
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return YES;
+}
+// 定义编辑样式
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return UITableViewCellEditingStyleDelete;
+}
+// 进入编辑模式，按下出现的编辑按钮后,进行删除操作
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"是否确认删除？" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self.colors removeObjectAtIndex:indexPath.row];
+            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+        }]];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
+
+//修改编辑按钮文字
+//- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    return @"删除";
+//}
 @end

@@ -35,10 +35,11 @@
     self.title = @"JCTableView";
     self.view.backgroundColor = [UIColor whiteColor];
     
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addNewCell:)];
-    UIBarButtonItem *reloadButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(reloadCells:)];
-    UIBarButtonItem *reloadTotalButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(reloadTotalCells:)];
-    self.navigationItem.rightBarButtonItems = @[ reloadTotalButton, reloadButton, addButton ];
+    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithTitle:@"+" style:UIBarButtonItemStylePlain target:self action:@selector(addNewCell:)];
+    UIBarButtonItem *minusButton = [[UIBarButtonItem alloc] initWithTitle:@"-" style:UIBarButtonItemStylePlain target:self action:@selector(minusCell:)];
+    UIBarButtonItem *reloadButton = [[UIBarButtonItem alloc] initWithTitle:@"re" style:UIBarButtonItemStylePlain target:self action:@selector(reloadCells:)];
+    UIBarButtonItem *reloadTotalButton = [[UIBarButtonItem alloc] initWithTitle:@"reload" style:UIBarButtonItemStylePlain target:self action:@selector(reloadTotalCells:)];
+    self.navigationItem.rightBarButtonItems = @[ reloadTotalButton, reloadButton, minusButton, addButton ];
     [self.view addSubview:self.tableView];
 }
 
@@ -84,13 +85,24 @@
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row0 inSection:0];
     NSIndexPath *indexPath1 = [NSIndexPath indexPathForRow:row1 inSection:0];
     [self.tableView insertRowsAtIndexPaths:@[ indexPath1, indexPath ] withRowAnimation:JCTableViewRowAnimationFade];
+}
+
+- (IBAction)minusCell:(id)sender
+{
+    NSInteger row0 = 0;
+    NSInteger row1 = 2;
+    NSMutableIndexSet *set = [NSMutableIndexSet new];
+    [set addIndex:row0];
+    [set addIndex:row1];
+    [self.colors removeObjectsAtIndexes:set];
     
-    /*
-    NSInteger row = 0;
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
-    [self.colors insertObject:[UIColor blackColor] atIndex:row];
-    [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:JCTableViewRowAnimationFade];
-    */
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row0 inSection:0];
+    NSIndexPath *indexPath1 = [NSIndexPath indexPathForRow:row1 inSection:0];
+    
+    CFTimeInterval timeStart = CACurrentMediaTime();
+    [self.tableView deleteRowsAtIndexPaths:@[ indexPath , indexPath1 ] withRowAnimation:JCTableViewRowAnimationNone];
+    // 0.004151
+    NSLog(@"deleteRowsAtIndexPaths timeEclips:%f", CACurrentMediaTime() - timeStart);
 }
 
 - (IBAction)reloadCells:(id)sender
@@ -144,12 +156,27 @@
 
 - (void)tableView:(JCTableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"didSelectRowAtIndexPath:%@", indexPath);
+//    NSLog(@"didSelectRowAtIndexPath:%@", indexPath);
 }
 
 - (void)tableView:(JCTableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"didDeselectRowAtIndexPath:%@", indexPath);
+//    NSLog(@"didDeselectRowAtIndexPath:%@", indexPath);
 }
 
+// Editing
+- (BOOL)tableView:(JCTableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return YES;
+}
+- (void)tableView:(JCTableView *)tableView commitEditingForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"是否确认删除？" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self.colors removeObjectAtIndex:indexPath.row];
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:JCTableViewRowAnimationTop];
+    }]];
+    [self presentViewController:alertController animated:YES completion:nil];
+}
 @end

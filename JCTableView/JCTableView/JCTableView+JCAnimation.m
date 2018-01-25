@@ -48,6 +48,42 @@
     cell.frame = startFrame;
 }
 
+- (CGRect)_prepareDeleteCell:(JCTableViewCell *)cell withAnimation:(JCTableViewRowAnimation)animation
+{
+    CGRect destFrame = cell.frame;
+    
+    switch (animation) {
+        case JCTableViewRowAnimationFade:
+            cell.alpha = .7f;
+            destFrame.size.height = 0.f;
+            break;
+            
+        case JCTableViewRowAnimationRight:
+            destFrame = CGRectOffset(cell.frame, CGRectGetWidth(cell.frame), 0);
+            destFrame.size.height = 0.f;
+            break;
+            
+        case JCTableViewRowAnimationLeft:
+            destFrame = CGRectOffset(cell.frame, -CGRectGetWidth(cell.frame), 0);
+            destFrame.size.height = 0.f;
+            break;
+            
+        case JCTableViewRowAnimationTop:
+            destFrame = CGRectOffset(cell.frame, 0, -CGRectGetHeight(cell.frame));
+            break;
+            
+        case JCTableViewRowAnimationBottom:
+        case JCTableViewRowAnimationNone:
+            destFrame.size.height = 0.f;
+            break;
+            
+        default:
+            break;
+    }
+    
+    return destFrame;
+}
+
 - (void)_prepareReloadCell:(JCTableViewCell *)cell withAnimation:(JCTableViewRowAnimation)animation
 {
     CGRect startFrame = cell.frame;

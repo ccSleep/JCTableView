@@ -10,8 +10,10 @@
 
 @interface JCTableView (JCAnimation)
 
-//insert
+// insert
 - (void)_prepareInsertCell:(JCTableViewCell *)cell padding:(CGFloat)padding withAnimation:(JCTableViewRowAnimation)animation;
+// delete
+- (CGRect)_prepareDeleteCell:(JCTableViewCell *)cell withAnimation:(JCTableViewRowAnimation)animation;
 // reload
 - (void)_prepareReloadCell:(JCTableViewCell *)cell withAnimation:(JCTableViewRowAnimation)animation;
 - (CGRect)_prepareReloadFrame:(CGRect)frame withAnimation:(JCTableViewRowAnimation)animation;

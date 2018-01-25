@@ -12,9 +12,7 @@
 #define kJCTableCellMargin  20.f
 
 @interface JCTableViewCell()
-@property (nonatomic, strong) UITableViewCell *cell;
 @property (nonatomic, strong, nullable, readwrite) UILabel *textLabel;
-
 @property (nonatomic, strong, readwrite) UIView *contentView;
 
 @property (nonatomic, copy, readwrite) NSString *reuseIdentifier;
@@ -77,6 +75,7 @@
 - (void)prepareForReuse
 {
     self.indexPath = nil;
+    self.swipingView = nil;
     
     [self setSelected:NO animated:NO];
 }
@@ -112,8 +111,5 @@
         }];
     }
 }
-
-#pragma mark -
-
 
 @end

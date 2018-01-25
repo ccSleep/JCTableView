@@ -47,6 +47,10 @@ typedef NS_ENUM(NSInteger, JCTableViewRowAnimation) {
 // Called after the user changes the selection.
 - (void)tableView:(JCTableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
 - (void)tableView:(JCTableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath;
+
+// Editing
+- (BOOL)tableView:(JCTableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath;
+- (void)tableView:(JCTableView *)tableView commitEditingForRowAtIndexPath:(NSIndexPath *)indexPath;
 @end
 
 

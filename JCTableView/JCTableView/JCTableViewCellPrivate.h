@@ -7,8 +7,10 @@
 //
 
 #import "JCTableViewCell.h"
+#import "JCSwipeActionPullView.h"
 
 @interface JCTableViewCell ()
-/// cell 是否被重用注册
 @property (nonatomic, strong) NSIndexPath *indexPath;
+//@property (nonatomic, assign, getter=isSwiping) BOOL swiping;
+@property (nonatomic, weak) JCSwipeActionPullView *swipingView;
 @end
