@@ -1,0 +1,17 @@
+//
+//  JCTableView-prefix.pch
+//  JCTableView
+//
+//  Created by 林锦超 on 25/01/2018.
+//  Copyright © 2018 林锦超. All rights reserved.
+//
+
+#ifndef JCTableView_prefix_pch
+#define JCTableView_prefix_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#import "JCTableView.h"
+
+#endif /* JCTableView_prefix_pch */

@@ -17,6 +17,7 @@
 		593E52FC200702A000020C15 /* JCTableViewUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E52FB200702A000020C15 /* JCTableViewUITests.m */; };
 		593E530F20073EDB00020C15 /* JCTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E530E20073EDB00020C15 /* JCTableViewCell.m */; };
 		593E53122007505B00020C15 /* JCTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 593E53102007505B00020C15 /* JCTableView.m */; };
+		5980B1FE20197E040025E27D /* JCTableSectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5980B1FD20197E040025E27D /* JCTableSectionViewController.m */; };
 		599086342011ECBC00FF4DB2 /* JCSwipeActionPullView.m in Sources */ = {isa = PBXBuildFile; fileRef = 599086332011ECBC00FF4DB2 /* JCSwipeActionPullView.m */; };
 		59985B2C200C8C6800E686A0 /* JCAppleTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 59985B2B200C8C6800E686A0 /* JCAppleTableViewController.m */; };
 		59985B2F200C8CFF00E686A0 /* JCRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 59985B2E200C8CFF00E686A0 /* JCRootViewController.m */; };
@@ -63,6 +64,9 @@
 		593E53102007505B00020C15 /* JCTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JCTableView.m; sourceTree = "<group>"; };
 		593E53112007505B00020C15 /* JCTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JCTableView.h; sourceTree = "<group>"; };
 		595CDEF82008532F00E60264 /* JCTableViewCellPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JCTableViewCellPrivate.h; sourceTree = "<group>"; };
+		5980B1FC20197E040025E27D /* JCTableSectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JCTableSectionViewController.h; sourceTree = "<group>"; };
+		5980B1FD20197E040025E27D /* JCTableSectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JCTableSectionViewController.m; sourceTree = "<group>"; };
+		5980B1FF20197E510025E27D /* JCTableView-prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "JCTableView-prefix.pch"; sourceTree = "<group>"; };
 		599086322011ECBC00FF4DB2 /* JCSwipeActionPullView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JCSwipeActionPullView.h; sourceTree = "<group>"; };
 		599086332011ECBC00FF4DB2 /* JCSwipeActionPullView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JCSwipeActionPullView.m; sourceTree = "<group>"; };
 		59985B2A200C8C6800E686A0 /* JCAppleTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JCAppleTableViewController.h; sourceTree = "<group>"; };
@@ -129,6 +133,9 @@
 				59985B2B200C8C6800E686A0 /* JCAppleTableViewController.m */,
 				593E52DA2007029F00020C15 /* JCTableViewController.h */,
 				593E52DB2007029F00020C15 /* JCTableViewController.m */,
+				5980B1FC20197E040025E27D /* JCTableSectionViewController.h */,
+				5980B1FD20197E040025E27D /* JCTableSectionViewController.m */,
+				5980B1FF20197E510025E27D /* JCTableView-prefix.pch */,
 				593E52D72007029F00020C15 /* AppDelegate.h */,
 				593E52D82007029F00020C15 /* AppDelegate.m */,
 				593E52E02007029F00020C15 /* Assets.xcassets */,
@@ -314,6 +321,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5980B1FE20197E040025E27D /* JCTableSectionViewController.m in Sources */,
 				593E530F20073EDB00020C15 /* JCTableViewCell.m in Sources */,
 				593E53122007505B00020C15 /* JCTableView.m in Sources */,
 				593E52DC2007029F00020C15 /* JCTableViewController.m in Sources */,
@@ -480,6 +488,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 94A5HQWMK3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/JCTableView/JCTableView-prefix.pch";
 				INFOPLIST_FILE = JCTableView/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Hope.JCTableView;
@@ -494,6 +504,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 94A5HQWMK3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/JCTableView/JCTableView-prefix.pch";
 				INFOPLIST_FILE = JCTableView/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Hope.JCTableView;

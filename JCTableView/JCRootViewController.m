@@ -9,6 +9,7 @@
 #import "JCRootViewController.h"
 #import "JCAppleTableViewController.h"
 #import "JCTableViewController.h"
+#import "JCTableSectionViewController.h"
 
 static NSString *kCellIdentifier = @"kCellIdentifier";
 
@@ -25,7 +26,7 @@ static NSString *kCellIdentifier = @"kCellIdentifier";
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.datas = @[ @"UITableView", @"JCTableView"];
+    self.datas = @[ @"UITableView", @"JCTableView", @"JCTableView - Section & RegisterCell"];
     
     self.navigationItem.title = @"JCTableViewDemo";
     self.view.backgroundColor = [UIColor whiteColor];
@@ -69,6 +70,10 @@ static NSString *kCellIdentifier = @"kCellIdentifier";
     else if (indexPath.row == 1) {
         JCTableViewController *customVC = [[JCTableViewController alloc] init];
         [self.navigationController pushViewController:customVC animated:YES];
+    }
+    else if (indexPath.row == 2) {
+        JCTableSectionViewController *customSectionVC = [[JCTableSectionViewController alloc] init];
+        [self.navigationController pushViewController:customSectionVC animated:YES];
     }
 }
 

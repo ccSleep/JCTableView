@@ -154,8 +154,12 @@
         // identifier has been registered
         if ([self.registerdIdentifierClassMap.allKeys containsObject:identifier]) {
             Class cls = [self.registerdIdentifierClassMap objectForKey:identifier];
-            if (cls && [cls instancesRespondToSelector:@selector(initWithReuseIdentifier:)]) {
+            
+            if ([cls instancesRespondToSelector:@selector(initWithReuseIdentifier:)]) {
                 cell = [[cls alloc] initWithReuseIdentifier:identifier];
+            }
+            else {
+                NSAssert(0 == 1, @"must pass a class of kind JCTableViewCell"); //always assert
             }
         }
     }
@@ -307,9 +311,9 @@
 
 - (CGRect)rectForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self _invalidIndexPath:indexPath]) {
-        return CGRectZero;
-    }
+//    if ([self _invalidIndexPath:indexPath]) {
+//        return CGRectZero;
+//    }
     
     CGFloat offsetY = self.cellIndexOffsetYMap[indexPath].floatValue;
     CGFloat height = self.cellIndexHeightMap[indexPath].floatValue;
@@ -323,9 +327,10 @@
 
 - (nullable __kindof JCTableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath created:(BOOL)isCreated
 {
-    if ([self _invalidIndexPath:indexPath]) {
-        return nil;
-    }
+    // 多余的判断，反而在 deleteRowAtIndexPath:animation: 内部调用会有问题
+//    if ([self _invalidIndexPath:indexPath]) {
+//        return nil;
+//    }
     
     JCTableViewCell *cell = self.visibleIndexCellMap[indexPath];
     if (!cell && isCreated) {
@@ -410,7 +415,7 @@
             if ([sortedVisibleIndexPaths containsObject:indexPath]) {
                 
                 // 找出插入位置后的cell，修改对应的 visibleIndexCellMap
-                NSMutableArray<NSIndexPath *> *afterIndexPathsInSameSection = [NSMutableArray array];
+                NSMutableArray<NSIndexPath *> *afterIndexPaths = [NSMutableArray array];
                 for (NSIndexPath *oneIndex in [sortedVisibleIndexPaths reverseObjectEnumerator]) {
                     if (oneIndex.section < indexPath.section) {
                         break;
@@ -420,7 +425,10 @@
                         self.visibleIndexCellMap[newIndexPath] = [self cellForRowAtIndexPath:oneIndex];
                         self.visibleIndexCellMap[newIndexPath].indexPath = newIndexPath;
                         
-                        [afterIndexPathsInSameSection addObject:newIndexPath];
+                        [afterIndexPaths addObject:newIndexPath];
+                    }
+                    else if (oneIndex.section > indexPath.section) {
+                        [afterIndexPaths addObject:oneIndex];
                     }
                 }
                 [self.visibleIndexCellMap removeObjectForKey:indexPath];
@@ -439,7 +447,7 @@
                     cell.frame = destFrame;
                     cell.alpha = 1.f;
                     
-                    [afterIndexPathsInSameSection enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    [afterIndexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                         JCTableViewCell *cell = [self cellForRowAtIndexPath:obj];
                         cell.frame = [self rectForRowAtIndexPath:obj];
                     }];
@@ -470,8 +478,8 @@
     
     NSArray<NSIndexPath *> *sortedIndexPaths = [self _sortedIndexPaths:indexPaths];
     [sortedIndexPaths enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSIndexPath * _Nonnull indexPath, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (![self _invalidIndexPath:indexPath]) {
-            
+//        if (![self _invalidIndexPath:indexPath]) {
+        
             // sorted visible
             NSArray<NSIndexPath *> *sortedVisibleIndexPaths = [self _sortedIndexPathForVisibleCells];
             if ([sortedVisibleIndexPaths containsObject:indexPath]) {
@@ -479,23 +487,30 @@
                 JCTableViewCell *deleteCell = [self cellForRowAtIndexPath:indexPath];
                 
                 // 找出删除位置之后的的cell，修改对应的 visibleIndexCellMap
-                NSMutableArray<NSIndexPath *> *afterIndexPathsInSameSection = [NSMutableArray array];
-                for (NSIndexPath *oneIndex in sortedVisibleIndexPaths) {
+                NSMutableArray<NSIndexPath *> *afterIndexPaths = [NSMutableArray array];
+                for (NSInteger idx = 0; idx < sortedVisibleIndexPaths.count; idx++) {
+                    NSIndexPath *oneIndex = sortedVisibleIndexPaths[idx];
+                    
                     if (oneIndex.section < indexPath.section) {
-                        break;
+                        continue;
                     }
                     else if (oneIndex.section == indexPath.section && oneIndex.row >= indexPath.row) {
+                        // same section
                         NSIndexPath *nextIndexPath = [NSIndexPath indexPathForRow:oneIndex.row + 1 inSection:oneIndex.section];
                         JCTableViewCell *nextCell = self.visibleIndexCellMap[nextIndexPath];
                         if (nextCell) {
                             self.visibleIndexCellMap[oneIndex] = nextCell;
                             self.visibleIndexCellMap[oneIndex].indexPath = oneIndex;
                             
-                            [afterIndexPathsInSameSection addObject:oneIndex];
+                            [afterIndexPaths addObject:oneIndex];
                         }
                         else {
                             [self.visibleIndexCellMap removeObjectForKey:oneIndex];
                         }
+                    }
+                    else if (oneIndex.section > indexPath.section) {
+                        // greater sections
+                        [afterIndexPaths addObject:oneIndex];
                     }
                 }
                 
@@ -504,7 +519,7 @@
                     deleteCell.frame = [self _prepareDeleteCell:deleteCell withAnimation:animation];
                     deleteCell.alpha = 1.f;
                     
-                    [afterIndexPathsInSameSection enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    [afterIndexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                         JCTableViewCell *cell = [self cellForRowAtIndexPath:obj];
                         cell.frame = [self rectForRowAtIndexPath:obj];
                     }];
@@ -516,7 +531,7 @@
                     [self _enqueueReusableCell:deleteCell];
                 }];
             }
-        }
+//        }
     }];
     
     _indexPathsForVisibleRows = [self _indexPathForVisibleCells];

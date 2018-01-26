@@ -7,7 +7,6 @@
 //
 
 #import "JCTableViewController.h"
-#import "JCTableView.h"
 
 @interface JCTableViewController ()<JCTableViewDataSource, JCTableViewDelegate>
 @property (nonatomic, strong) JCTableView *tableView;
@@ -24,12 +23,12 @@
     _colors = [@[ [UIColor redColor],
                  [self randomColor],
                  [self randomColor],
-                 [self randomColor],
-                 [self randomColor],
-                 [self randomColor],
-                 [self randomColor],
-                 [self randomColor],
-                 [self randomColor],
+//                 [self randomColor],
+//                 [self randomColor],
+//                 [self randomColor],
+//                 [self randomColor],
+//                 [self randomColor],
+//                 [self randomColor],
                  [UIColor greenColor]] mutableCopy];
     
     self.title = @"JCTableView";
