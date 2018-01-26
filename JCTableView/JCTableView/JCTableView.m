@@ -488,9 +488,7 @@
                 
                 // 找出删除位置之后的的cell，修改对应的 visibleIndexCellMap
                 NSMutableArray<NSIndexPath *> *afterIndexPaths = [NSMutableArray array];
-                for (NSInteger idx = 0; idx < sortedVisibleIndexPaths.count; idx++) {
-                    NSIndexPath *oneIndex = sortedVisibleIndexPaths[idx];
-                    
+                for (NSIndexPath *oneIndex in sortedVisibleIndexPaths) {
                     if (oneIndex.section < indexPath.section) {
                         continue;
                     }
