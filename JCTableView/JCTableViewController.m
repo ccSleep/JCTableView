@@ -166,8 +166,12 @@
 // Editing
 - (BOOL)tableView:(JCTableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return YES;
+    if (indexPath.row == 0 || indexPath.row == 1) {
+        return YES;
+    }
+    return NO;
 }
+
 - (void)tableView:(JCTableView *)tableView commitEditingForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"是否确认删除？" message:nil preferredStyle:UIAlertControllerStyleAlert];

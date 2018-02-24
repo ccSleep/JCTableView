@@ -14,9 +14,27 @@
 
 #define kJCTableViewCellHeightDefault   44.f
 
-#define kRespondsToSelector(id, SEL)        (id && [id respondsToSelector:SEL])
-#define kDelegateRespondsToSelector(SEL)    kRespondsToSelector(self.delegate, SEL)
-#define kDataSourceRespondsToSelector(SEL)  kRespondsToSelector(self.dataSource, SEL)
+//#define kRespondsToSelector(id, SEL)        (id && [id respondsToSelector:SEL])
+//#define kDelegateRespondsToSelector(SEL)    kRespondsToSelector(self.delegate, SEL)
+//#define kDataSourceRespondsToSelector(SEL)  kRespondsToSelector(self.dataSource, SEL)
+
+struct
+{
+    unsigned int heightForRowAtIndexPath:1;
+    
+    unsigned int didSelectRowAtIndexPath:1;
+    unsigned int didDeselectRowAtIndexPath:1;
+    
+    unsigned int canEditRowAtIndexPath:1;
+    unsigned int commitEditingForRowAtIndexPath:1;
+}_delegateFlags;
+
+struct
+{
+    unsigned int numberOfSectionsInTableView:1;
+    unsigned int numberOfRowsInSection:1;
+    unsigned int cellForRowAtIndexPath:1;
+}_dataSourceFlags;
 
 @interface JCTableView()
 @property (nonatomic, weak) id<JCTableViewDelegate> jcDelegate;
@@ -36,8 +54,6 @@
 @property (nonatomic, assign, readwrite) NSInteger numberOfSections;
 
 /// editing
-@property (nonatomic, assign) BOOL canEditRow;
-
 @property (nonatomic, strong) NSMutableSet<JCSwipeActionPullView *> *recycledSwipeViews;
 @property (nonatomic, strong) JCSwipeActionPullView *previousSwipeView;
 @property (nonatomic, assign) CGPoint panStartPoint;
@@ -117,6 +133,10 @@
 {
     _dataSource = dataSource;
     
+    _dataSourceFlags.numberOfSectionsInTableView = [dataSource respondsToSelector:@selector(numberOfSectionsInTableView:)];
+    _dataSourceFlags.numberOfRowsInSection = [dataSource respondsToSelector:@selector(tableView:numberOfRowsInSection:)];
+    _dataSourceFlags.cellForRowAtIndexPath = [dataSource respondsToSelector:@selector(tableView:cellForRowAtIndexPath:)];
+    
     [self _resizeTableContent];
 }
 
@@ -125,7 +145,12 @@
     super.delegate = delegate;
     
     _jcDelegate = delegate;
-    _canEditRow = [_jcDelegate respondsToSelector:@selector(tableView:canEditRowAtIndexPath:)];
+    
+    _delegateFlags.heightForRowAtIndexPath = [delegate respondsToSelector:@selector(tableView:heightForRowAtIndexPath:)];
+    _delegateFlags.didSelectRowAtIndexPath = [delegate respondsToSelector:@selector(tableView:didSelectRowAtIndexPath:)];
+    _delegateFlags.didDeselectRowAtIndexPath = [delegate respondsToSelector:@selector(tableView:didDeselectRowAtIndexPath:)];
+    _delegateFlags.canEditRowAtIndexPath = [delegate respondsToSelector:@selector(tableView:canEditRowAtIndexPath:)];
+    _delegateFlags.commitEditingForRowAtIndexPath = [delegate respondsToSelector:@selector(tableView:commitEditingForRowAtIndexPath:)];
     
     [self _resizeTableContent];
 }
@@ -159,7 +184,7 @@
                 cell = [[cls alloc] initWithReuseIdentifier:identifier];
             }
             else {
-                NSAssert(0 == 1, @"must pass a class of kind JCTableViewCell"); //always assert
+                NSAssert(false, @"must pass a class of kind JCTableViewCell"); //always assert
             }
         }
     }
@@ -205,6 +230,7 @@
 - (void)_resizeTableContent
 {
 //    CFTimeInterval timeStart = CACurrentMediaTime();
+    [self.previousSwipeView swipeToHide];
     
     [_cellIndexHeightMap removeAllObjects];
     [_cellIndexOffsetYMap removeAllObjects];
@@ -215,7 +241,7 @@
             
             CGFloat height = kJCTableViewCellHeightDefault;
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:section];
-            if (kDelegateRespondsToSelector(@selector(tableView:heightForRowAtIndexPath:))) {
+            if (_delegateFlags.heightForRowAtIndexPath) {
                 height = [self.delegate tableView:self heightForRowAtIndexPath:indexPath];
             }
             
@@ -284,7 +310,7 @@
 #pragma mark - Info
 - (NSInteger)numberOfSections
 {
-    if (kDataSourceRespondsToSelector(@selector(numberOfSectionsInTableView:))) {
+    if (_dataSourceFlags.numberOfSectionsInTableView) {
         _numberOfSections = [self.dataSource numberOfSectionsInTableView:self];
     }
     else {
@@ -295,7 +321,7 @@
 
 - (NSInteger)numberOfRowsInSection:(NSInteger)section
 {
-    if (kDataSourceRespondsToSelector(@selector(tableView:numberOfRowsInSection:))) {
+    if (_dataSourceFlags.numberOfRowsInSection) {
         return [self.dataSource tableView:self numberOfRowsInSection:section];
     }
     return 0;
@@ -334,7 +360,7 @@
     
     JCTableViewCell *cell = self.visibleIndexCellMap[indexPath];
     if (!cell && isCreated) {
-        if (kDataSourceRespondsToSelector(@selector(tableView:cellForRowAtIndexPath:))) {
+        if (_dataSourceFlags.cellForRowAtIndexPath) {
             cell = [self.dataSource tableView:self cellForRowAtIndexPath:indexPath];
         }
     }
@@ -606,7 +632,7 @@
             [cell setSelected:YES animated:YES];
             
             // select
-            if (kDelegateRespondsToSelector(@selector(tableView:didSelectRowAtIndexPath:))) {
+            if (_delegateFlags.didSelectRowAtIndexPath) {
                 [self.delegate tableView:self didSelectRowAtIndexPath:cell.indexPath];
             }
         }
@@ -618,7 +644,7 @@
                 if (cell.indexPath.section == oldSelectedIndexPath.section &&
                     cell.indexPath.row == oldSelectedIndexPath.row) {
                     
-                    if (kDelegateRespondsToSelector(@selector(tableView:didDeselectRowAtIndexPath:))) {
+                    if (_delegateFlags.didDeselectRowAtIndexPath) {
                         [self.delegate tableView:self didDeselectRowAtIndexPath:cell.indexPath];
                     }
                     oldSelectedIndexPath = nil;
@@ -630,7 +656,7 @@
 
 - (IBAction)_handlePanGestureRecognizer:(UIPanGestureRecognizer *)sender
 {
-    if (!self.canEditRow) {
+    if (!_delegateFlags.canEditRowAtIndexPath) {
         return;
     }
     
@@ -644,13 +670,16 @@
         if (point.x < _panStartPoint.x) {
             [self.visibleCells enumerateObjectsUsingBlock:^(__kindof JCTableViewCell * _Nonnull cell, NSUInteger idx, BOOL * _Nonnull stop) {
                 if (CGRectContainsPoint(cell.frame, point)) {
-                    // swipe
-                    if (!cell.swipingView) {
-                        [self.previousSwipeView swipeToHide];
-                        
-                        JCSwipeActionPullView *swipeView = [self _prepareSwipeViewForCell:cell];
-                        [swipeView swipeToShow];
-                        self.previousSwipeView = swipeView;
+                    // can edit
+                    if ([self.delegate tableView:self canEditRowAtIndexPath:cell.indexPath]) {
+                        // swipe
+                        if (!cell.swipingView) {
+                            [self.previousSwipeView swipeToHide];
+                            
+                            JCSwipeActionPullView *swipeView = [self _prepareSwipeViewForCell:cell];
+                            [swipeView swipeToShow];
+                            self.previousSwipeView = swipeView;
+                        }
                     }
                     
                     *stop = YES;
